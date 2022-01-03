@@ -1,14 +1,16 @@
-
 let car;
 let resetButton;
 let markerButton;
-let startButton;
+let pauseButton;
 let metronome;
 let meterstick;
+let meterstick2;
 let ruler;
+let ruler2;
 let markOn;
 let marks;
 let moving;
+let pause = false;
 
 let checkBoxBuggy1;
 let checkBoxBuggy2;
@@ -19,10 +21,9 @@ let nextKlack = 0;
 let muted = true;
 
 function preload() {
-  klack = loadSound('metronome_clack.wav');
-  klack.playMode('restart');
+  klack = loadSound("metronome_clack.wav");
+  klack.playMode("restart");
 }
-
 
 function setup() {
   createCanvas(1000, 400);
@@ -31,16 +32,17 @@ function setup() {
   car = new Car(width / 4, height / 2, 1, 0);
   car3 = new Car(width / 6, height / 2, 0, 1);
   ruler = new Ruler(width / 4, 250, 20, 400);
-  marks = []
+  ruler2 = new Ruler(width / 5, 280, 20, 400);
+  marks = [];
   moving = false;
-  
+
   resetButton = createButton("Reset");
   resetButton.position(10, height - 50);
   resetButton.size(100, 40);
   resetButton.style("font-size", "20px");
   resetButton.style("background-color", color(240, 240, 130));
   resetButton.mousePressed(reset);
-  
+
   markerButton = createButton("Marker On");
   markerButton.position(120, height - 50);
   markerButton.size(130, 40);
@@ -48,100 +50,96 @@ function setup() {
   markerButton.style("background-color", color(140, 210, 240));
   markerButton.mousePressed(mark);
   markOn = false;
+
+  pauseButton = createButton("Pause");
+  pauseButton.position(430, height - 50);
+  pauseButton.size(130, 40);
+  pauseButton.style("font-size", "20px");
+  pauseButton.style("background-color", color(240, 140, 140));
+  pauseButton.mousePressed(function(){
+
+    
+    if (pause == false){
+        pauseButton.html("Unpause")
+    }
+    if (pause == true){
+        pauseButton.html("Pause")
+    }
+    pause = !pause;
+  });
   
-  checkBoxBuggy1 = createCheckbox(' Buggy 1', true);
-  checkBoxBuggy1.position(10,20)
+  checkBoxBuggy1 = createCheckbox(" Buggy 1", true);
+  checkBoxBuggy1.position(10, 20);
   checkBoxBuggy1.style("font-family", "Helvetica");
   checkBoxBuggy1.style("font-size", "20px");
   checkBoxBuggy1.changed(buggy1);
-  
-  checkBoxBuggy2 = createCheckbox(' Buggy 2', false);
-  checkBoxBuggy2.position(10,40)
+
+  checkBoxBuggy2 = createCheckbox(" Buggy 2", false);
+  checkBoxBuggy2.position(10, 40);
   checkBoxBuggy2.style("font-family", "Helvetica");
   checkBoxBuggy2.style("font-size", "20px");
   checkBoxBuggy2.changed(buggy2);
-  
-  checkBoxRacer = createCheckbox(' Racer', false);
-  checkBoxRacer.position(10,60)
+
+  checkBoxRacer = createCheckbox(" Racer", false);
+  checkBoxRacer.position(10, 60);
   checkBoxRacer.style("font-family", "Helvetica");
   checkBoxRacer.style("font-size", "20px");
   checkBoxRacer.changed(racer);
-  
-  startButton = createButton("Toys On");
-  startButton.position(260, height - 50);
-  startButton.size(100, 40);
-  startButton.style("font-size", "20px");
-  startButton.style("background-color", color(240, 180, 100));
-  startButton.mousePressed(
-    function(){
-      moving = !moving
-      if (checkBoxBuggy1.checked()){car.on = !car.on}
-    
-    if (checkBoxBuggy2.checked()){
-    car2.on = !car2.on}
-       if (checkBoxRacer.checked()){
-    car3.on = !car3.on}
-    
-    if (moving){
-      startButton.html("Toys Off")
-    } else {
-      startButton.html("Toys On")
-    }
-    
-  }
-    )
-  
+ 
   metronome = createButton("Metronome On");
-  metronome.position(370, height - 50);
+  metronome.position(260, height - 50);
   metronome.size(160, 40);
   metronome.style("font-size", "20px");
   metronome.style("background-color", color(170, 240, 170));
-  metronome.mousePressed(function(){muted = !muted;
-                                    if(muted){
-                                      metronome.html("Metronome On")
-                                    } else {
-                                      metronome.html("Metronome Off")
-                                    }
-                                    
-                                   });
-  
-  
-  
+  metronome.mousePressed(function () {
+    muted = !muted;
+    if (muted) {
+      metronome.html("Metronome On");
+    } else {
+      metronome.html("Metronome Off");
+    }
+  });
 }
 
 function draw() {
   background(220);
-   let timeNow = millis();
-  
-  if (timeNow > nextKlack && muted == false) {
+  textSize(20)
+  text("Pressing the spacebar or the back of a car toggles it on/off." , width/4, 30)
+  text("Pressing the hood of a car turns it around." , width/4, 55)
+  text("The rulers and cars can be dragged with the mouse." , width/4, 80)
+  let timeNow = millis();
+
+  if (timeNow > nextKlack && muted == false ** pause == false) {
     klack.play();
-  	nextKlack = timeNow + 1000;
+    nextKlack = timeNow + 1000;
   }
- 
-  if (checkBoxBuggy1.checked()){
-    car.move();
+  
+  if (checkBoxBuggy1.checked()) {
+car.move();
     car.display();
   }
-  
-  if (checkBoxBuggy2.checked()){
-    car2.move();
+
+  if (checkBoxBuggy2.checked()) {
+car2.move();
     car2.display();
   }
 
-  if (checkBoxRacer.checked()){
-    car3.move();
+  if (checkBoxRacer.checked()) {
+car3.move();
     car3.display();
   }
 
-
   ruler.move();
   ruler.display();
-  for (let i = 0; i< marks.length; i++){
-    fill(0,0,200);
+  ruler2.move();
+  ruler2.display();
+
+  for (let i = 0; i < marks.length; i++) {
+    fill(0, 0, 200);
     noStroke;
     ellipse(marks[i].x, marks[i].y, 8);
   }
-  if (markOn){
+  if (markOn) {
     ellipse(mouseX, mouseY, 8);
   }
 }
@@ -158,10 +156,10 @@ class Car {
     this.direction = createVector(1, 0);
   }
   move() {
-    if (this.on) {
-      this.v += 0.007*this.a
-      this.y += this.v*this.direction.y;
-      this.x += this.v*this.direction.x;
+    if (this.on && pause == false) {
+      this.v += 0.007 * this.a;
+      this.y += this.v * this.direction.y;
+      this.x += this.v * this.direction.x;
     } else if (this.dragging) {
       this.x = mouseX;
       this.y = mouseY;
@@ -181,22 +179,21 @@ class Car {
     rect(12, -15, 10, 12);
     rect(-12, 15, 10, 12);
     rect(12, 15, 10, 12);
-    if (this.a != 0){
-      stroke(0)
-      fill(250)
-      rect(0, 14, 28, 19);
+    if (this.a != 0) {
+      stroke(0);
+      fill(250);
+      rect(0, 14, 28, 20);
       triangle(-15, -25, 15, -25, 0, 30);
-       
-    } else{ 
-     if (this.v < 1.1){  
-        fill(250, 0, 0);
     } else {
-       fill(0, 0, 250);
-    }
-     rect(0, 0, 28, 54);
-       stroke(0);
-    strokeWeight(0.5);
-    rect(0, 0, 20, 15);
+      if (this.v < 1.1) {
+        fill(250, 0, 0);
+      } else {
+        fill(10, 130, 250);
+      }
+      rect(0, 0, 28, 54);
+      stroke(0);
+      strokeWeight(0.5);
+      rect(0, 0, 20, 15);
     }
     noStroke();
     fill(250, 250, 0);
@@ -236,8 +233,7 @@ class Car {
       this.turning = false;
       this.dragging = false;
       this.on = !this.on;
-      if (this.on){
-        
+      if (this.on) {
       }
     }
   }
@@ -259,71 +255,71 @@ class Ruler {
     fill(240, 240, 140);
     noStroke();
     translate(this.x, this.y);
-    rotate(90)
+    rotate(90);
     rect(0, 0, this.w, this.h);
     tickMarks(-this.w / 2, -this.h / 2, 4);
     pop();
   }
-  
+
   pickedUp() {
-     if (abs(this.x - mouseX) < this.h/2 && abs(this.y - mouseY) < this.w/2) {
-     
+    if (
+      abs(this.x - mouseX) < this.h / 2 &&
+      abs(this.y - mouseY) < this.w / 2
+    ) {
       this.offsetX = this.x - mouseX;
       this.offsetY = this.y - mouseY;
       this.dragging = true;
-      this.x = mouseX// + this.offsetX;
-      this.y = mouseY// + this.offsetY;
+      this.x = mouseX; // + this.offsetX;
+      this.y = mouseY; // + this.offsetY;
     }
     if (
-      abs(this.x - mouseX ) < this.w/2 &&
-      abs(this.y + this.h/2 - mouseY) < this.h/2
+      abs(this.x - mouseX) < this.w / 2 &&
+      abs(this.y + this.h / 2 - mouseY) < this.h / 2
     ) {
-     
       this.dragging = false;
     }
   }
 
-  move(){
-    if (this.dragging){
+  move() {
+    if (this.dragging) {
       this.x = mouseX + this.offsetX;
       this.y = mouseY + this.offsetY;
     }
-    
   }
-
 }
 
 function mousePressed() {
-  if (!markOn){
-    if (checkBoxBuggy1.checked()){
-       car.pickedUp();
+  if (!markOn) {
+    if (checkBoxBuggy1.checked()) {
+      car.pickedUp();
     }
-   if (checkBoxBuggy2.checked()){
-       car2.pickedUp();
+    if (checkBoxBuggy2.checked()) {
+      car2.pickedUp();
     }
-    if (checkBoxRacer.checked()){
-       car3.pickedUp();
+    if (checkBoxRacer.checked()) {
+      car3.pickedUp();
     }
-  ruler.pickedUp();
-  } else 
-  {
+    ruler.pickedUp();
+    ruler2.pickedUp();
+  } else {
     marks.push(createVector(mouseX, mouseY));
   }
 }
 function mouseReleased() {
-   if (checkBoxBuggy1.checked()){
-  car.dragging = false;
-  car.turning = false;
-   }
-  if (checkBoxBuggy2.checked()){
-  car2.dragging = false;
-  car2.turning = false;
-   }
-  if (checkBoxRacer.checked()){
-  car3.dragging = false;
-  car3.turning = false;
-   }
+  if (checkBoxBuggy1.checked()) {
+    car.dragging = false;
+    car.turning = false;
+  }
+  if (checkBoxBuggy2.checked()) {
+    car2.dragging = false;
+    car2.turning = false;
+  }
+  if (checkBoxRacer.checked()) {
+    car3.dragging = false;
+    car3.turning = false;
+  }
   ruler.dragging = false;
+  ruler2.dragging = false;
 }
 
 function tickMarks(x, y, s) {
@@ -343,40 +339,61 @@ function tickMarks(x, y, s) {
 
 function reset() {
   marks = [];
-    if (checkBoxBuggy1.checked()){car.on = false;
-                                 car.x = width/3; 
-                                   car.y = height /2 }
-    if (checkBoxBuggy2.checked()){
-    car2.on = false
-    car2.x = width/3
-    car2.y = height/3}
-       if (checkBoxRacer.checked()){
+  if (checkBoxBuggy1.checked()) {
+    car.on = false;
+    car.x = width / 3;
+    car.y = height / 2;
+  }
+  if (checkBoxBuggy2.checked()) {
+    car2.on = false;
+    car2.x = width / 3;
+    car2.y = height / 3;
+  }
+  if (checkBoxRacer.checked()) {
     car3.on = false;
-         car3.v = 0
-       car3.x = width/6
-       car3.y = height/3
-       }
-  startButton.html("Toys On")
+    car3.v = 0;
+    car3.x = width / 6;
+    car3.y = height / 3;
+  }
+  pauseButton.html("Pause");
+  pause = false;
 }
 
-function mark(){
-  if (!markOn){
-    markerButton.html("Marker Off")  }
-  else {
-    markerButton.html("Marker On")  }
+function mark() {
+  if (!markOn) {
+    markerButton.html("Marker Off");
+  } else {
+    markerButton.html("Marker On");
+  }
   markOn = !markOn;
-  
 }
 
-function buggy1(){
-     car = new Car(width / 3, height / 2, 1, 0)
+function buggy1() {
+  car = new Car(width / 3, height / 2, 1, 0);
 }
 
-function buggy2(){
-     car2 = new Car(width / 3, height / 3, 1.7, 0)
+function buggy2() {
+  car2 = new Car(width / 3, height / 3, 1.7, 0);
 }
 
-function racer(){
- 
-     car3 = new Car(width / 6, height / 3, 0, 1)
+function racer() {
+  car3 = new Car(width / 6, height / 3, 0, 1);
+}
+
+function keyPressed() {
+  if (keyCode == 32) {
+    if (checkBoxBuggy1.checked()) {
+      car.on = !car.on;
+    }
+    if (checkBoxBuggy2.checked()) {
+      car2.on = !car2.on;
+    }
+    if (checkBoxRacer.checked()) {
+      car3.on = !car3.on;
+      if (car3.on == false) {
+      car3.v = 0;
+    }
+    }
+    
+  }
 }
